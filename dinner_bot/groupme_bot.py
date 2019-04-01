@@ -15,6 +15,7 @@ class GroupmeBot(BotFrontend):
     @staticmethod
     def register_args(parser: ArgumentParser):
         parser.add_argument('--groupme-bot-id-file')
+        parser.add_argument('--groupme-callback-subdomain', default='mds-groupme-dinner-bot-1')
 
     def __init__(self, args, core_bot):
         super().__init__(core_bot)
@@ -27,7 +28,7 @@ class GroupmeBot(BotFrontend):
         self.app.add_url_rule('/groupmeMessage', 'get_message', self.get_message, methods=['POST'])
         self.lt_process = None  # type: Popen
         self.port = 18712
-        self.subdomain = 'mds-groupme-dinner-bot-1'
+        self.subdomain = args.groupme_callback_subdomain
         self.callback_url = 'https://{}.localtunnel.me/groupmeMessage'.format(self.subdomain)
 
     def get_message(self):
@@ -58,7 +59,7 @@ class GroupmeBot(BotFrontend):
 
     def create_local_tunnel(self):
         sleep(2)
-        self.lt_process = Popen(['lt', '--port', str(self.port), '--subdomain', self.subdomain], stdout=PIPE)
+        self.lt_process = Popen(['lt', '--port', str(self.port), '--subdomain', self.subdomain])
         print('Callback is live at:', self.callback_url)
 
     def run(self):
