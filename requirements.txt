@@ -1,0 +1,9 @@
+requests
+telepot
+GroupyAPI
+padatious
+durations
+python-dateutil
+humanhash3
+flask
+Flask-RESTPlus
