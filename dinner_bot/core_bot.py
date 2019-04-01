@@ -1,15 +1,9 @@
 import time
 
-import dateutil
-from durations import Duration
 from os.path import join, basename, isdir
 
 from argparse import ArgumentParser
 from glob import glob
-try:
-    from padatious import IntentContainer
-except ImportError:
-    from padaos import IntentContainer
 from threading import Timer
 from typing import Callable, Optional
 from typing import List
@@ -54,6 +48,7 @@ def format_duration(seconds: float, num_components=1) -> str:
 def parse_time(s) -> float:
     if 'am' not in s and 'pm' not in s:
         s = s.strip() + ' pm'
+    import dateutil
     return dateutil.parser.parse(s).timestamp()
 
 
@@ -88,6 +83,10 @@ class CoreBot:
         parser.add_argument('--intents-folder', help='Location of installed intents', required=True)
 
     def __init__(self, args):
+        try:
+            from padatious import IntentContainer
+        except ImportError:
+            from padaos import IntentContainer
         self.dinner_start_time = None
         self.dinner_location = None
         self.eating_users = []  # type: List[DinnerUser]
@@ -267,6 +266,7 @@ class CoreBot:
             self.eating_users.append(user)
 
     def inform_schedule(self, matches: dict, user: DinnerUser):
+        from durations import Duration
         self.remove_user(user)
         if 'duration' in matches:
             user.ready_time = time.time() + Duration(matches['duration']).to_seconds()

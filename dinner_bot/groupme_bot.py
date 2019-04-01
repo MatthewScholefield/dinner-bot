@@ -1,9 +1,7 @@
-import requests
 from signal import SIGINT
 from time import sleep
 
 from argparse import ArgumentParser
-from flask import Flask, request
 from subprocess import Popen, PIPE
 from threading import Thread
 
@@ -20,6 +18,7 @@ class GroupmeBot(BotFrontend):
 
     def __init__(self, args, core_bot):
         super().__init__(core_bot)
+        from flask import Flask
         if not args.groupme_bot_id_file:
             raise NotImplementedError
         with open(args.groupme_bot_id_file) as f:
@@ -32,6 +31,8 @@ class GroupmeBot(BotFrontend):
         self.callback_url = 'https://{}.localtunnel.me/groupmeMessage'.format(self.subdomain)
 
     def get_message(self):
+        import requests
+        from flask import request
         data = request.json
         if data['sender_type'] == 'bot':
             return '{}'

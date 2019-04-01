@@ -2,11 +2,7 @@ import time
 
 from hashlib import md5
 from time import sleep
-
-import humanhash
 from os.path import isfile
-
-import telepot
 from argparse import ArgumentParser
 
 from dinner_bot.bot_frontend import BotFrontend
@@ -21,6 +17,7 @@ class TelegramDinnerBot(BotFrontend):
 
     def __init__(self, args, core_bot: CoreBot):
         super().__init__(core_bot)
+        import telepot
         if not args.telegram_token_file:
             raise NotImplementedError
         with open(args.telegram_token_file) as f:
@@ -38,6 +35,7 @@ class TelegramDinnerBot(BotFrontend):
             f.write(str(self.last_msg))
 
     def run(self):
+        import humanhash
         while True:
             for data in self.bot.getUpdates(offset=self.last_msg + 1):
                 msg = data['message']
