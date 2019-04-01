@@ -11,7 +11,7 @@ from typing import List
 
 class DinnerUser:
     def __init__(self, name, reply: Callable, ready_time: int = None, user_id='', client=None):
-        from bot_frontend import DummyBot
+        from dinner_bot.bot_frontend import DummyBot
         self.name = name
         self.user_id = user_id
         self.reply = reply
