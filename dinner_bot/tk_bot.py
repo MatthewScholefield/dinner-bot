@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from bot_frontend import BotFrontend
+from dinner_bot.bot_frontend import BotFrontend
 
 from tkinter import *
 

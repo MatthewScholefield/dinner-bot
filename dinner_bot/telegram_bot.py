@@ -1,6 +1,5 @@
 import time
 
-from flask import Flask
 from hashlib import md5
 from time import sleep
 
@@ -10,8 +9,8 @@ from os.path import isfile
 import telepot
 from argparse import ArgumentParser
 
-from bot_frontend import BotFrontend
-from core_bot import CoreBot
+from dinner_bot.bot_frontend import BotFrontend
+from dinner_bot.core_bot import CoreBot
 
 
 class TelegramDinnerBot(BotFrontend):

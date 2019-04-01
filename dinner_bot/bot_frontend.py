@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from argparse import ArgumentParser
 from typing import Callable
 
-from core_bot import CoreBot
+from dinner_bot.core_bot import CoreBot
 
 
 class BotFrontend(metaclass=ABCMeta):

@@ -13,7 +13,6 @@ except ImportError:
 from threading import Timer
 from typing import Callable, Optional
 from typing import List
-from typing import TYPE_CHECKING
 
 
 class DinnerUser:

@@ -7,7 +7,7 @@ from flask import Flask, request
 from subprocess import Popen, PIPE
 from threading import Thread
 
-from bot_frontend import BotFrontend
+from dinner_bot.bot_frontend import BotFrontend
 
 
 class GroupmeBot(BotFrontend):

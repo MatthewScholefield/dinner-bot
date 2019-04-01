@@ -3,10 +3,10 @@ from builtins import NotImplementedError
 from argparse import ArgumentParser
 from threading import Thread, Event
 
-from core_bot import CoreBot
+from dinner_bot.core_bot import CoreBot
 from dinner_bot.telegram_bot import TelegramDinnerBot
-from groupme_bot import GroupmeBot
-from tk_bot import TkBot
+from dinner_bot.groupme_bot import GroupmeBot
+from dinner_bot.tk_bot import TkBot
 
 bot_classes = [
     TelegramDinnerBot,
