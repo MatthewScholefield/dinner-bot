@@ -5,4 +5,4 @@
 .venv/
 *-token.txt
 *-bot-id.txt
-
+*.egg-info/
