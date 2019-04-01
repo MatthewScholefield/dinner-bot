@@ -1,0 +1,8 @@
+.intent-cache/
+.idea/
+.lastmsg.*
+*.pyc
+.venv/
+*-token.txt
+*-bot-id.txt
+
