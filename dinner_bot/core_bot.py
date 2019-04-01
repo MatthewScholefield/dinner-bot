@@ -6,7 +6,10 @@ from os.path import join, basename, isdir
 
 from argparse import ArgumentParser
 from glob import glob
-from padatious import IntentContainer
+try:
+    from padatious import IntentContainer
+except ImportError:
+    from padaos import IntentContainer
 from threading import Timer
 from typing import Callable, Optional
 from typing import List

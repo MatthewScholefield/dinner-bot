@@ -10,11 +10,16 @@ setup(
     packages=[
         'dinner_bot'
     ],
+    entry_points={
+        'console_scripts': [
+            'dinner-bot=dinner_bot.__main__:main'
+        ]
+    },
     install_requires=[
         'requests',
         'telepot',
         'GroupyAPI',
-        'padatious',
+        'padaos',
         'durations',
         'python-dateutil',
         'humanhash3',
