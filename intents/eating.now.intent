@@ -1,4 +1,4 @@
-I'm eating right now (at {location}).
+I'm eating right now (at {location}|).
 My coordinates are {location}.
 Coordinates {location}.
 I'm actually at {location}.
