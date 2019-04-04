@@ -30,6 +30,7 @@ class GroupmeBot(BotFrontend):
         self.port = 18712
         self.subdomain = args.groupme_callback_subdomain
         self.callback_url = 'https://{}.localtunnel.me/groupmeMessage'.format(self.subdomain)
+        self.alive = True
 
     def get_message(self):
         import requests
@@ -59,8 +60,14 @@ class GroupmeBot(BotFrontend):
 
     def create_local_tunnel(self):
         sleep(2)
-        self.lt_process = Popen(['lt', '--port', str(self.port), '--subdomain', self.subdomain])
-        print('Callback is live at:', self.callback_url)
+        while self.alive:
+            self.lt_process = Popen(['lt', '--port', str(self.port), '--subdomain', self.subdomain])
+            print('Callback is live at:', self.callback_url)
+            code = self.lt_process.wait()
+            print('Exit code:', code)
+            if self.alive:
+                sleep(2)
+        
 
     def run(self):
         Thread(target=self.create_local_tunnel, daemon=True).start()
@@ -70,6 +77,7 @@ class GroupmeBot(BotFrontend):
             self.shutdown()
 
     def shutdown(self):
+        self.alive = False
         if self.lt_process:
             self.lt_process.send_signal(SIGINT)
             self.lt_process = None

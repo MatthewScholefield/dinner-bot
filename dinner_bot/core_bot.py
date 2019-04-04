@@ -48,8 +48,8 @@ def format_duration(seconds: float, num_components=1) -> str:
 def parse_time(s) -> float:
     if 'am' not in s and 'pm' not in s:
         s = s.strip() + ' pm'
-    import dateutil
-    return dateutil.parser.parse(s).timestamp()
+    from dateutil.parser import parse
+    return parse(s).timestamp()
 
 
 class CoreBot:
