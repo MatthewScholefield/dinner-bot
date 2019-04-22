@@ -52,6 +52,47 @@ def parse_time(s) -> float:
     return parse(s).timestamp()
 
 
+class IntentContainerWrapper:
+    def __init__(self):
+        try:
+            from padatious import IntentContainer
+            self.container = IntentContainer('.intent-cache')
+            self.is_padaos = False
+        except ImportError:
+            from padaos import IntentContainer
+            self.container = IntentContainer()
+            self.is_padaos = True
+
+    def _load_intent_lines(self, intent_file, suffix, function):
+        name = basename(intent_file).replace(suffix, '')
+        with open(intent_file) as f:
+            lines = [i for i in map(str.strip, f.read().split('\n')) if i]
+        function(name, lines)
+
+    def load_intent(self, intent_file):
+        self._load_intent_lines(intent_file, '.intent', self.container.add_intent)
+
+    def load_entity(self, entity_file):
+        self._load_intent_lines(entity_file, '.entity', self.container.add_entity)
+
+    def train(self):
+        if self.is_padaos:
+            self.container.compile()
+        else:
+            self.container.train(debug=True)
+
+    def calc_intent(self, sentence):
+        intent = self.container.calc_intent(sentence)
+        if self.is_padaos:
+            conf = float(bool(intent['name']))
+            intent_name = intent['name']
+            matches = intent['entities']
+        else:
+            conf = intent.conf
+            intent_name = intent.name
+            matches = intent.matches
+        return conf, intent_name, matches
+
 class CoreBot:
     HELP_LINES = [
         'Commands:',
@@ -83,10 +124,6 @@ class CoreBot:
         parser.add_argument('--intents-folder', help='Location of installed intents', required=True)
 
     def __init__(self, args):
-        try:
-            from padatious import IntentContainer
-        except ImportError:
-            from padaos import IntentContainer
         self.dinner_start_time = None
         self.dinner_location = None
         self.eating_users = []  # type: List[DinnerUser]
@@ -95,7 +132,7 @@ class CoreBot:
         self.scheduled_timers = []
         self.cancel_dinner_timer = None
 
-        self.container = IntentContainer('.intent-cache')
+        self.container = IntentContainerWrapper()
         self.load_intents(args.intents_folder)
 
     def load_intents(self, folder):
@@ -104,18 +141,17 @@ class CoreBot:
         intent_files = glob(join(folder, '*.intent'))
         entity_files = glob(join(folder, '*.entity'))
         for intent_file in intent_files:
-            name = basename(intent_file).replace('.intent', '')
-            self.container.load_intent(name, intent_file)
+            self.container.load_intent(intent_file)
         for entity_file in entity_files:
-            name = basename(entity_file).replace('.entity', '')
-            self.container.load_entity(name, entity_file)
-        self.container.train(debug=True)
+            self.container.load_entity(entity_file)
+        self.container.train()
 
     def give_message(self, message, user_id, name, reply: Callable, client):
         print('Received message:', message)
-        intent = self.container.calc_intent(message)
-        print('Calculated intent:', intent)
-        if intent.conf < 0.5:
+        conf, intent_name, matches = self.container.calc_intent(message)
+        print('Calculated intent: {}({}) {}'.format(intent_name, conf, matches))
+
+        if conf < 0.5:
             reply(self.UNKNOWN_STR)
         else:
             user = DinnerUser(name, reply, user_id=user_id, client=client)
@@ -126,7 +162,7 @@ class CoreBot:
                 'dinner.inform.schedule': self.inform_schedule,
                 'dinner.ask.ready': self.ask_ready,
                 'dinner.done': self.dinner_done,
-            }[intent.name](intent.matches, user)
+            }[intent_name](matches, user)
 
     def min_till_dinner(self) -> Optional[int]:
         if self.dinner_start_time is None:
