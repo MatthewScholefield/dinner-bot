@@ -1,6 +1,6 @@
-I'm eating right now (at {location}|).
+(I'm|I am) eating (dinner|) (right|) now (at {location}|).
+(I'm|I am) going (down|(down|) to eat (dinner|)|(down|) for dinner) (right|) now
 My coordinates are {location}.
 Coordinates {location}.
 I'm actually at {location}.
 (I'm already|I (just|) started) eating (at {location}|)
-{location}

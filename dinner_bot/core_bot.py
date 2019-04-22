@@ -93,6 +93,7 @@ class CoreBot:
         self.scheduled_users = []  # type: List[DinnerUser]
         self.dinner_notify_timers = []
         self.scheduled_timers = []
+        self.cancel_dinner_timer = None
 
         self.container = IntentContainer('.intent-cache')
         self.load_intents(args.intents_folder)
@@ -185,10 +186,27 @@ class CoreBot:
         if 'location' in matches:
             matches['location'] = '({})'.format(matches['location'])
 
+    def cancel_in_3_hours(self):
+        if self.cancel_dinner_timer:
+            self.cancel_dinner_timer.cancel()
+        t = self.cancel_dinner_timer = Timer(3 * 60 * 60, self.cancel_dinner)
+        t.start()
+
+    def cancel_dinner(self):
+        if self.cancel_dinner_timer:
+            self.cancel_dinner_timer = None
+        self.dinner_start_time = None
+        self.dinner_location = None
+        for i in self.dinner_notify_timers:
+            i.cancel()
+        self.dinner_notify_timers = []
+        self.eating_users = []
+
     def inform_eating(self, matches: dict, user: DinnerUser):
         self.fix_location(matches)
         self.remove_user(user)
         self.eating_users.append(user)
+        self.cancel_in_3_hours()
         if not self.dinner_start_time:
             user.reply("You are the only one. I'll let you know if anyone joins you.")
             self.dinner_start_time = time.time()
@@ -234,6 +252,7 @@ class CoreBot:
 
     def inform_ready(self, _: dict, user: DinnerUser):
         self.remove_user(user)
+        self.cancel_in_3_hours()
         if self.dinner_start_time is None:
             if len(self.eating_users) == 0:
                 if len(self.scheduled_users) > 0:
@@ -245,6 +264,7 @@ class CoreBot:
             else:
                 self.eating_users.append(user)
                 self.dinner_start_time = time.time() + 10 * 60
+                self.cancel_in_3_hours()
                 for i in self.eating_users:
                     i.reply('Dinner will commence in {} with {}'.format(
                         format_duration(self.dinner_start_time - time.time()), self.name_list(i)
@@ -291,13 +311,5 @@ class CoreBot:
         user.reply(self.raw_dinner_status(user) + ' ' + self.get_scheduled_info())
 
     def dinner_done(self, _, user):
-        self.dinner_start_time = None
-        self.dinner_location = None
-        for i in self.dinner_notify_timers:
-            i.cancel()
-        self.dinner_notify_timers = []
-        self.eating_users = []
-        for i in self.scheduled_timers:
-            i.cancel()
-        self.scheduled_users = []
+        self.cancel_dinner()
         user.reply('Okay, I\'ve marked dinner as completed')
