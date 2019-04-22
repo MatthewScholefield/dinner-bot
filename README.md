@@ -2,7 +2,7 @@
 
 *A multi-faceted dinner scheduling chat bot for groups of college students*
 
-Organizing a time to eat every nighht normally involves either a non-trivial
+Organizing a time to eat every night normally involves either a non-trivial
 amount of planning or a high chance of a suboptimal schedule where people eat
 at different times. This bot aims to solve this problem. With a multi-faced
 interaction model, users can chat with dinner-bot through both telegram
