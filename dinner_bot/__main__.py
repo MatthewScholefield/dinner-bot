@@ -34,11 +34,18 @@ def main():
     args = parser.parse_args()
 
     core_bot = CoreBot(args)
+    threads = []
     for bot_cls in bot_classes:
-        Thread(target=run_bot, args=[bot_cls, args, core_bot], daemon=True).start()
-    Event().wait()
-    for i in bot_instances:
-        i.shutdown()
+        t = Thread(target=run_bot, args=[bot_cls, args, core_bot], daemon=True)
+        t.start()
+        threads.append(t)
+
+    try:
+        for i in threads:
+            i.join()
+    finally:
+        for i in bot_instances:
+            i.shutdown()
 
 
 if __name__ == '__main__':
