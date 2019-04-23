@@ -33,7 +33,7 @@ def plural_format(string, num, plural_string=None):
     return (string if num == 1 else plural_string or string + 's').format(num)
 
 
-def format_duration(seconds: float, num_components=1) -> str:
+def format_duration(seconds: float, num_components=2) -> str:
     hours, remainder = divmod(seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     hours, minutes, seconds = map(int, [hours, minutes, seconds])
@@ -177,7 +177,7 @@ class CoreBot:
 
     def get_scheduled_info(self, exclude_user: DinnerUser = None):
         info = format_list(['{} will be ready to eat in {}'.format(
-            i.name, format_duration(i.ready_time - time.time(), 1)
+            i.name, format_duration(i.ready_time - time.time())
         ) for i in self.scheduled_users if not exclude_user or i.user_id != exclude_user.user_id])
         return (info + '.') * bool(info)
 
@@ -339,7 +339,7 @@ class CoreBot:
         t.start()
         self.scheduled_timers.append(t)
         user.reply("I've marked that you won't be ready for another {}. {}".format(
-            format_duration(user.ready_time - time.time() + 1, 1),
+            format_duration(user.ready_time - time.time() + 1),
             self.get_scheduled_info(user) + ' ' + self.raw_dinner_status(user)
         ))
 
