@@ -330,7 +330,8 @@ class CoreBot:
             user.ready_time = parse_time(matches['time'])
         self.scheduled_users.append(user)
         def on_schedule():
-            self.scheduled_users.remove(user)
+            if user in self.scheduled_users:
+                self.scheduled_users.remove(user)
             self.remove_user(user)
             self.inform_ready({}, user)
 
